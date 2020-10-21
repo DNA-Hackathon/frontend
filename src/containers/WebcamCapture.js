@@ -9,13 +9,12 @@ const videoConstraints = {
 
 const WebcamCapture = ({ onCapture }) => {
   const webcamRef = React.useRef(null)
-
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
     const image = new Image()
     image.src = imageSrc
     onCapture(image)
-  }, [webcamRef])
+  }, [webcamRef, onCapture])
 
   return (
     <>
