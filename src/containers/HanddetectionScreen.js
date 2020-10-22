@@ -46,9 +46,7 @@ const HanddetectionScreen = () => {
 
   const detectHand = capturedImage => {
     model.current.detect(capturedImage).then(predictions => {
-      console.log(predictions)
       if (!isEmpty(predictions)) {
-        console.log('Hand found: ', predictions[0])
         cropImage(capturedImage, predictions[0]['bbox'])
       }
     })
