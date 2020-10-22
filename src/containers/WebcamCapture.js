@@ -7,7 +7,7 @@ const videoConstraints = {
   facingMode: 'user'
 }
 
-const WebcamCapture = ({ onCapture }) => {
+const WebcamCapture = ({ onCapture, width, height }) => {
   const webcamRef = React.useRef(null)
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
@@ -20,13 +20,12 @@ const WebcamCapture = ({ onCapture }) => {
     <>
       <Webcam
         audio={false}
-        height={720}
+        height={height}
         ref={webcamRef}
         screenshotFormat='image/jpeg'
-        width={1280}
+        width={width}
         videoConstraints={videoConstraints}
       />
-      <button onClick={capture}>Capture photo</button>
     </>
   )
 }
