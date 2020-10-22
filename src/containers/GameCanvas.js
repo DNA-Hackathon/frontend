@@ -23,8 +23,6 @@ const StartGameText = styled.div`
 
 const WebcamFrame = styled.div`
   position: absolute;
-  bottom: -8px;
-  left: -8px;
 `
 
 const Canvas = styled.div`
