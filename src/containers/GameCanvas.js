@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import WebcamCapture from './WebcamCapture'
 import { generateRandomLetters, getRandomInt } from '../utils/UIHelpers'
+import YoutubeBackground from 'react-youtube-background'
+import HandAwareWebcam from '../components/HandAwareWebcam'
+import Score from '../components/Score'
+import Letter, { letterSize } from '../components/Letter'
 
-const letterSize = 90
-const webcamWidth = '400px'
-const webcamHeight = '200px'
 const letterCount = 10
 const canvasWidth = 1000
-const canvasHeight = 600
+const canvasHeight = 800
 const timeInterval = 4000
 
 const StartGameText = styled.div`
@@ -22,8 +22,8 @@ const StartGameText = styled.div`
 
 const WebcamFrame = styled.div`
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: -8px;
+  left: -8px;
 `
 
 const Canvas = styled.div`
@@ -31,22 +31,7 @@ const Canvas = styled.div`
   height: ${canvasHeight}px;
   position: relative;
   border: 5px solid black;
-  background-color: green;
   margin: 100px auto 0 auto;
-`
-
-const Letter = styled.div`
-  background: black;
-  position: absolute;
-  display: block;
-  width: ${letterSize}px;
-  height: ${letterSize}px;
-  color: white;
-  text-align: center;
-  line-height: ${letterSize}px;
-  border-radius: ${letterSize / 2 + 3}px;
-  font-size: 50px;
-  border: 3px solid white;
 `
 
 export default function GameCanvas () {
@@ -106,24 +91,33 @@ export default function GameCanvas () {
 
   return (
     <Canvas ref={canvasRef} onKeyDown={toggleGame} tabIndex='0'>
+      <YoutubeBackground
+        videoId='Oe3FG4EOgyU'
+        style={{ height: '100%', width: '100%' }}
+      >
+        <Score score={100} />
+        <WebcamFrame>
+          <HandAwareWebcam
+            style={{ position: 'absolute' }}
+            onHandRecognized={(img, predictions) =>
+              console.log(img, predictions)
+            }
+          />
+        </WebcamFrame>
+      </YoutubeBackground>
+
       {!gameStarted && (
         <StartGameText>Press space to start the game</StartGameText>
       )}
       {letters &&
         letters.map((value, index) => (
           <Letter
-            style={{
-              bottom: value.y,
-              left: value.x,
-              visibility: value.active ? 'visible' : 'hidden'
-            }}
-          >
-            {value.value}
-          </Letter>
+            x={value.x}
+            y={value.y}
+            active={value.active}
+            value={value.value}
+          />
         ))}
-      <WebcamFrame>
-        {/* <WebcamCapture width={webcamWidth} height={webcamHeight} /> */}
-      </WebcamFrame>
     </Canvas>
   )
 }
