@@ -26,7 +26,8 @@ export function generateRandomLetters (
       x: getRandomInt(canvasWidth - letterSize),
       y: getRandomInt(canvasHeight - letterSize),
       r: letterSize,
-      value: getRandomLetter()
+      value: getRandomLetter(),
+      active: false
     }
     let overlapping = false
     // check that it is not overlapping with any existing circle
