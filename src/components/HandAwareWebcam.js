@@ -12,6 +12,14 @@ const Video = styled.video({
   padding: 0
 })
 
+const modelParams = {
+  flipHorizontal: true, // flip e.g for video
+  imageScaleFactor: 0.7, // reduce input image size for gains in speed.
+  maxNumBoxes: 1, // maximum number of boxes to detect
+  iouThreshold: 0.5, // ioU threshold for non-max suppression
+  scoreThreshold: 0.6 // confidence threshold for predictions.
+}
+
 export default function HandAwareWebcam ({ onHandRecognized }) {
   const webcam = React.useRef()
   const model = React.useRef()
@@ -31,7 +39,7 @@ export default function HandAwareWebcam ({ onHandRecognized }) {
   }, [])
 
   React.useEffect(() => {
-    handTrack.load().then(handModel => {
+    handTrack.load(modelParams).then(handModel => {
       console.log('model loaded...')
       model.current = handModel
     })

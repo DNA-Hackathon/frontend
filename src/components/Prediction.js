@@ -30,7 +30,7 @@ export default function Prediction ({ prediction }) {
         AI
         <span role='img' aria-label='AI'>
           🤖
-        </span>{' '}
+        </span>
         identifies
       </Title>
       <Value>{prediction}</Value>
