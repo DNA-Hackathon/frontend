@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import WebcamCapture from './WebcamCapture'
 import * as handTrack from 'handtrackjs'
-import * as tf from '@tensorflow/tfjs'
+import { isEmpty } from 'lodash'
 
 const modelParams = {
-  flipHorizontal: true, // flip e.g for video
+  flipHorizontal: false, // flip e.g for video
   imageScaleFactor: 0.7, // reduce input image size for gains in speed.
   maxNumBoxes: 1, // maximum number of boxes to detect
   iouThreshold: 0.5, // ioU threshold for non-max suppression
@@ -12,74 +12,52 @@ const modelParams = {
 }
 
 const HanddetectionScreen = () => {
-  const [image, setImage] = React.useState(null)
-  const model = useRef()
+  const model = React.useRef()
+  const canvas = React.useRef()
 
-  const cropImage = (image, coordinates) => {
-    const x = coordinates[0]
-    const y = coordinates[1]
-    const width = coordinates[2]
-    const height = coordinates[3]
-    const boxes = [
-      [y / height, x / width, (y + height) / height, (x + width) / width]
-    ]
-    console.log(boxes)
-    const tensor = tf.browser.fromPixels(image)
-    const tensor4dInt = tensor.as4D(
-      1,
-      tensor.shape[0],
-      tensor.shape[1],
-      tensor.shape[2]
-    )
-    const tensor4dFloat = tensor4dInt.div(255)
-    tensor4dFloat.print()
-    let cropped_tensor = tf.image.cropAndResize(
-      tensor4dFloat,
-      boxes,
-      [0],
-      [width, height],
-      'nearest'
-    )
-    cropped_tensor.print()
-    let canvas = document.getElementsByTagName('canvas')[0]
-    return tf.browser.toPixels(
-      cropped_tensor.reshape([
-        cropped_tensor.shape[1],
-        cropped_tensor.shape[2],
-        cropped_tensor.shape[3]
-      ]),
-      canvas
-    )
+  const cropImage = (image, bbox) => {
+    console.log('Found hand on:', bbox)
+    const x = bbox[0]
+    const y = bbox[1]
+    const width = bbox[2]
+    const height = bbox[3]
+
+    const ctx = canvas.current.getContext('2d')
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(
+      image,
+      x,
+      y, // Start at x/y pixels from the left and the top of the image (crop),
+      width,
+      height, // "Get" a `50 * 50` (w * h) area from the source image (crop),
+      0,
+      0, // Place the result at 0, 0 in the canvas,
+      400,
+      300
+    ) // With as width / height: 100 * 100 (scale)
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     handTrack.load(modelParams).then(lmodel => {
       model.current = lmodel
-      console.log('Model loaded')
+      console.log('Model loaded...')
     })
   }, [model])
 
   const detectHand = capturedImage => {
-    setImage(capturedImage)
-    capturedImage.onload = () => {
-      model.current.detect(capturedImage).then(predictions => {
-        if (predictions) {
-          cropImage(capturedImage, predictions[0]['bbox']).then(
-            croppedImage => {
-              console.log(croppedImage)
-              setImage(croppedImage)
-            }
-          )
-        }
-      })
-    }
+    model.current.detect(capturedImage).then(predictions => {
+      console.log(predictions)
+      if (!isEmpty(predictions)) {
+        console.log('Hand found: ', predictions[0])
+        cropImage(capturedImage, predictions[0]['bbox'])
+      }
+    })
   }
 
   return (
     <>
       <WebcamCapture onCapture={detectHand} />
-      <canvas></canvas>
-      {image && <img src={image.src} />}
+      <canvas ref={canvas}></canvas>
     </>
   )
 }

@@ -12,19 +12,19 @@ const WebcamCapture = ({ onCapture }) => {
 
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
-    const image = new Image()
+    const image = new Image(1280, 720)
     image.src = imageSrc
-    onCapture(image)
-  }, [webcamRef])
+    image.onload = () => onCapture(image)
+  }, [webcamRef, onCapture])
 
   return (
     <>
       <Webcam
         audio={false}
-        height={720}
+        width={800}
+        height={600}
         ref={webcamRef}
-        screenshotFormat='image/jpeg'
-        width={1280}
+        screenshotFormat='image/png'
         videoConstraints={videoConstraints}
       />
       <button onClick={capture}>Capture photo</button>
