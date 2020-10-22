@@ -5,10 +5,11 @@ import YoutubeBackground from 'react-youtube-background'
 import HandAwareWebcam from '../components/HandAwareWebcam'
 import Score from '../components/Score'
 import Letter, { letterSize } from '../components/Letter'
+import Prediction from '../components/Prediction'
 
 const letterCount = 10
-const canvasWidth = 1000
-const canvasHeight = 800
+const canvasWidth = window.innerWidth
+const canvasHeight = window.innerHeight
 const timeInterval = 4000
 
 const StartGameText = styled.div`
@@ -30,16 +31,44 @@ const Canvas = styled.div`
   width: ${canvasWidth}px;
   height: ${canvasHeight}px;
   position: relative;
-  border: 5px solid black;
-  margin: 100px auto 0 auto;
 `
 
 export default function GameCanvas () {
   const [letters, setLetters] = React.useState([])
   const [activeLetterIndex, setActiveLetterIndex] = React.useState(0)
+  const [activeLetter, setActiveLetter] = React.useState(null)
   const canvasRef = React.useRef(null)
   const intervalId = React.useRef(0)
   const [gameStarted, setGameStarted] = React.useState(false)
+  const [currentPrediction, setCurrentPrediction] = React.useState()
+  const [isCorrect, setIsCorrect] = React.useState()
+
+  const predict = React.useCallback(async (img, predictions) => {
+    const payload = {
+      image: img,
+      bbox: predictions[0]?.bbox
+    }
+
+    const response = await fetch(
+      'https://team4-backend.scapp.swisscom.com/game/compute',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }
+    )
+
+    const body = await response.json()
+    const prediction = body.prediction
+    if (activeLetter !== null && prediction === activeLetter.value) {
+      setIsCorrect(true)
+    } else {
+      setIsCorrect(false)
+    }
+    setCurrentPrediction(body.prediction)
+  }, [])
 
   const setLetterActive = () => {
     const newLetters = [...letters]
@@ -47,7 +76,7 @@ export default function GameCanvas () {
       const index = getRandomInt(letters.length)
       const item = { ...newLetters[index] }
       const previousItem = { ...newLetters[activeLetterIndex] }
-      if (item == previousItem) {
+      if (item === previousItem) {
         setLetterActive()
       }
       item.active = true
@@ -55,6 +84,7 @@ export default function GameCanvas () {
       newLetters[index] = item
       newLetters[activeLetterIndex] = previousItem
       setActiveLetterIndex(index)
+      setActiveLetter(item)
     }
     setLetters(newLetters)
   }
@@ -71,7 +101,7 @@ export default function GameCanvas () {
   }, [])
 
   const toggleGame = e => {
-    if (e.keyCode == 32) {
+    if (e.keyCode === 32) {
       if (!gameStarted) {
         setGameStarted(true)
         setLetterActive()
@@ -86,16 +116,15 @@ export default function GameCanvas () {
   return (
     <Canvas ref={canvasRef} onKeyDown={toggleGame} tabIndex='0'>
       <YoutubeBackground
-        videoId='Oe3FG4EOgyU'
+        videoId='Oed3FG4EOgyU'
         style={{ height: '100%', width: '100%' }}
       >
         <Score score={100} />
+        <Prediction prediction={currentPrediction} />
         <WebcamFrame>
           <HandAwareWebcam
             style={{ position: 'absolute' }}
-            onHandRecognized={(img, predictions) =>
-              console.log(img, predictions)
-            }
+            onHandRecognized={predict}
           />
         </WebcamFrame>
       </YoutubeBackground>

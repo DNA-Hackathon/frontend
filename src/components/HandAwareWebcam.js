@@ -4,6 +4,9 @@ import * as handTrack from 'handtrackjs'
 import { isEmpty } from 'lodash'
 
 const Video = styled.video({
+  position: 'absolute',
+  left: 50,
+  bottom: 50,
   border: 'solid 5px black',
   borderRadius: 5,
   padding: 0
@@ -49,9 +52,12 @@ export default function HandAwareWebcam ({ onHandRecognized }) {
         model.current &&
         model.current.detect(webcam.current).then(predictions => {
           if (!isEmpty(predictions)) {
-            console.log('Predictions: ', predictions)
             const ctx = canvas.current.getContext('2d')
-            ctx.drawImage(webcam.current, 0, 0, 640, 480)
+            ctx.scale(-1, 1)
+            ctx.drawImage(webcam.current, 0, 0, 335 * -1, 200)
+            ctx.beginPath()
+            ctx.rect(...predictions[0].bbox)
+            ctx.stroke()
             onHandRecognized(canvas.current.toDataURL(), predictions)
           }
         })
