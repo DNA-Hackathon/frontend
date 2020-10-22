@@ -16,7 +16,7 @@ const StartGameText = styled.div`
   bottom: ${canvasHeight / 2}px;
   left: ${canvasWidth / 2 - 120}px;
   text-align: center;
-  font-size: 20px;
+  font-size: 30px;
   color: white;
 `
 
@@ -44,23 +44,17 @@ export default function GameCanvas () {
   const setLetterActive = () => {
     const newLetters = [...letters]
     if (letters.length > 0) {
-      let updated = false
-      let counter = 0
-      while (!updated) {
-        const index = getRandomInt(letters.length)
-        const item = { ...newLetters[index] }
-        const previousItem = { ...newLetters[activeLetterIndex] }
-        if (!item.active || counter == letters.length - 1) {
-          item.active = true
-          previousItem.active = false
-          newLetters[index] = item
-          newLetters[activeLetterIndex] = previousItem
-          setActiveLetterIndex(index)
-          updated = true
-        } else {
-          counter++
-        }
+      const index = getRandomInt(letters.length)
+      const item = { ...newLetters[index] }
+      const previousItem = { ...newLetters[activeLetterIndex] }
+      if (item == previousItem) {
+        setLetterActive()
       }
+      item.active = true
+      previousItem.active = false
+      newLetters[index] = item
+      newLetters[activeLetterIndex] = previousItem
+      setActiveLetterIndex(index)
     }
     setLetters(newLetters)
   }
@@ -106,9 +100,7 @@ export default function GameCanvas () {
         </WebcamFrame>
       </YoutubeBackground>
 
-      {!gameStarted && (
-        <StartGameText>Press space to start the game</StartGameText>
-      )}
+      {!gameStarted && <StartGameText>Press space</StartGameText>}
       {letters &&
         letters.map((value, index) => (
           <Letter
