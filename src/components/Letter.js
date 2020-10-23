@@ -26,16 +26,19 @@ export default function Letter ({ y, x, active, value, time }) {
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      if (!active) {
-        setSeconds(time / 1000)
-      } else {
-        if (seconds > 0) {
-          setSeconds(seconds => seconds - 1)
-        }
+      if (active && seconds > 0) {
+        setSeconds(seconds => seconds - 1)
       }
     }, 1000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      setSeconds(time / 1000)
+    }
   }, [active])
+
+  if (!active) {
+    return null
+  }
 
   return (
     <LetterComp
