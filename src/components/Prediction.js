@@ -23,7 +23,7 @@ const Value = styled.div({
   '-webkit-text-fill-color': 'white'
 })
 
-export default function Prediction ({ prediction }) {
+export default function Prediction ({ prediction, correct }) {
   return (
     <Container>
       <Title>
@@ -33,7 +33,9 @@ export default function Prediction ({ prediction }) {
         </span>{' '}
         identifies
       </Title>
-      <Value>{prediction}</Value>
+      <Value>
+        {prediction} {correct && correct}
+      </Value>
     </Container>
   )
 }

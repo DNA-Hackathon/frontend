@@ -17,7 +17,7 @@ const modelParams = {
   imageScaleFactor: 0.7, // reduce input image size for gains in speed.
   maxNumBoxes: 1, // maximum number of boxes to detect
   iouThreshold: 0.5, // ioU threshold for non-max suppression
-  scoreThreshold: 0.4 // confidence threshold for predictions.
+  scoreThreshold: 0.95 // confidence threshold for predictions.
 }
 
 export default function HandAwareWebcam ({ onHandRecognized }) {

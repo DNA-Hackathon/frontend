@@ -14,15 +14,20 @@ const timeInterval = 4000
 
 const StartGameText = styled.div`
   position: absolute;
-  bottom: ${canvasHeight / 2}px;
-  left: ${canvasWidth / 2 - 120}px;
+  right: 60px;
+  bottom: 40px;
   text-align: center;
-  font-size: 30px;
   color: white;
+  font-size: 60px;
+  font-weight: bold;
+  -webkit-text-stroke: 3px black;
+  -webkit-text-fill-color: white;
 `
 
 const WebcamFrame = styled.div`
   position: absolute;
+  bottom: 0;
+  left: 0;
 `
 
 const Canvas = styled.div`
@@ -34,39 +39,52 @@ const Canvas = styled.div`
 export default function GameCanvas () {
   const [letters, setLetters] = React.useState([])
   const [activeLetterIndex, setActiveLetterIndex] = React.useState(0)
-  const [activeLetter, setActiveLetter] = React.useState(null)
   const canvasRef = React.useRef(null)
   const intervalId = React.useRef(0)
   const [gameStarted, setGameStarted] = React.useState(false)
   const [currentPrediction, setCurrentPrediction] = React.useState()
-  const [isCorrect, setIsCorrect] = React.useState()
+  const [isCorrect, setIsCorrect] = React.useState(null)
+  const [score, setScore] = React.useState(0)
 
-  const predict = React.useCallback(async (img, predictions) => {
-    const payload = {
-      image: img,
-      bbox: predictions[0]?.bbox
-    }
-
-    const response = await fetch(
-      'https://team4-backend.scapp.swisscom.com/game/compute',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+  const predict = React.useCallback(
+    async (img, predictions) => {
+      const payload = {
+        image: img,
+        bbox: predictions[0]?.bbox
       }
-    )
 
-    const body = await response.json()
-    const prediction = body.prediction
-    if (activeLetter !== null && prediction === activeLetter.value) {
-      setIsCorrect(true)
-    } else {
-      setIsCorrect(false)
-    }
-    setCurrentPrediction(body.prediction)
-  }, [])
+      const response = await fetch(
+        'https://team4-backend.scapp.swisscom.com/game/compute',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        }
+      )
+
+      const body = await response.json()
+      const prediction = body.prediction
+      console.log(prediction)
+      console.log(letters)
+      console.log(activeLetterIndex)
+      console.log(letters[activeLetterIndex])
+      let activeLetter = letters[activeLetterIndex]
+      if (
+        activeLetter !== null &&
+        prediction.toLowerCase() === activeLetter.value
+      ) {
+        setIsCorrect('correct')
+        setScore(score + 10)
+      } else if (gameStarted) {
+        setScore(score - 10)
+        setIsCorrect('not correct')
+      }
+      setCurrentPrediction(body.prediction)
+    },
+    [letters, activeLetterIndex, score, setIsCorrect, setScore]
+  )
 
   const setLetterActive = () => {
     const newLetters = [...letters]
@@ -82,7 +100,6 @@ export default function GameCanvas () {
       newLetters[index] = item
       newLetters[activeLetterIndex] = previousItem
       setActiveLetterIndex(index)
-      setActiveLetter(item)
     }
     setLetters(newLetters)
   }
@@ -114,11 +131,15 @@ export default function GameCanvas () {
   return (
     <Canvas ref={canvasRef} onKeyDown={toggleGame} tabIndex='0'>
       <YoutubeBackground
-        videoId='Oed3FG4EOgyU'
+        videoId='XqZsoesa55w'
         style={{ height: '100%', width: '100%' }}
+        playerOptions={{
+          mute: 0,
+          autoplay: 0  
+        }}
       >
-        <Score score={100} />
-        <Prediction prediction={currentPrediction} />
+        <Score score={score} />
+        <Prediction prediction={currentPrediction} correct={isCorrect} />
         <WebcamFrame>
           <HandAwareWebcam
             style={{ position: 'absolute' }}
