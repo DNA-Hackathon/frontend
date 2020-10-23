@@ -35,7 +35,7 @@ export default function Prediction ({ prediction, correct }) {
       </Title>
       <Value
         style={{
-          color: correct === 'correct' ? 'green' : 'red'
+          '-webkit-text-fill-color': correct === 'not correct' ? 'red' : 'green'
         }}
       >
         {prediction} {correct && correct}

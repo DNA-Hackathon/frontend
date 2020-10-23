@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { generateRandomLetters, getRandomInt } from '../utils/UIHelpers'
-import YoutubeBackground from 'react-youtube-background'
 import HandAwareWebcam from '../components/HandAwareWebcam'
 import Score from '../components/Score'
 import Letter, { letterSize } from '../components/Letter'
