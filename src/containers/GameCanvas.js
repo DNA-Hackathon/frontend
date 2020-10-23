@@ -5,7 +5,6 @@ import HandAwareWebcam from '../components/HandAwareWebcam'
 import Score from '../components/Score'
 import Letter, { letterSize } from '../components/Letter'
 import Prediction from '../components/Prediction'
-import BackgroundVideo from '../resources/BabyShark.mp4'
 
 const letterCount = 10
 const canvasWidth = window.innerWidth
@@ -150,7 +149,7 @@ export default function GameCanvas () {
           zIndex: -1
         }}
       >
-        <source src={BackgroundVideo} type='video/mp4' />
+        <source src='BabyShark.mp4' type='video/mp4' />
       </video>
       <Score score={score} />
       <Prediction prediction={currentPrediction} correct={isCorrect} />
