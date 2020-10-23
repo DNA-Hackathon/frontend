@@ -4,8 +4,9 @@ import styled from 'styled-components'
 export const letterSize = 180
 
 const LetterComp = styled.div`
-  background: white;
   position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  background-image: url("signs/${props => props.letter}.png");
   display: block;
   width: ${letterSize}px;
   height: ${letterSize}px;
@@ -38,6 +39,7 @@ export default function Letter ({ y, x, active, value, time }) {
 
   return (
     <LetterComp
+      letter={value}
       style={{
         bottom: y,
         left: x,
