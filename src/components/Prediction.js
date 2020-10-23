@@ -33,7 +33,11 @@ export default function Prediction ({ prediction, correct }) {
         </span>{' '}
         identifies
       </Title>
-      <Value>
+      <Value
+        style={{
+          '-webkit-text-fill-color': correct === 'not correct' ? 'red' : 'green'
+        }}
+      >
         {prediction} {correct && correct}
       </Value>
     </Container>
