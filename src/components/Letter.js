@@ -12,7 +12,7 @@ const LetterComp = styled.div`
   text-align: center;
   line-height: ${letterSize}px;
   border-radius: ${letterSize / 2 + 7}px;
-  font-size: 80px;
+  font-size: 120px;
   border: 7px solid black;
   color: white;
   font-weight: bold;
@@ -20,7 +20,22 @@ const LetterComp = styled.div`
   -webkit-text-fill-color: white;
 `
 
-export default function Letter ({ y, x, active, value }) {
+export default function Letter ({ y, x, active, value, time }) {
+  const [seconds, setSeconds] = React.useState(time / 1000)
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (!active) {
+        setSeconds(time / 1000)
+      } else {
+        if (seconds > 0) {
+          setSeconds(seconds => seconds - 1)
+        }
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [active])
+
   return (
     <LetterComp
       style={{
@@ -29,7 +44,8 @@ export default function Letter ({ y, x, active, value }) {
         visibility: active ? 'visible' : 'hidden'
       }}
     >
-      {value}
+      <span>{value.toUpperCase()}</span>
+      <span style={{ fontSize: 32 }}>{seconds}</span>
     </LetterComp>
   )
 }
