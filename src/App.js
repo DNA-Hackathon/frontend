@@ -1,12 +1,8 @@
 import React from 'react'
-import HanddetectionScreen from './containers/HanddetectionScreen'
+import GameCanvas from './containers/GameCanvas'
 
 function App () {
-  return (
-    <div className='App'>
-      <HanddetectionScreen />
-    </div>
-  )
+  return <GameCanvas />
 }
 
 export default App
