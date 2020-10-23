@@ -10,7 +10,7 @@ import Prediction from '../components/Prediction'
 const letterCount = 10
 const canvasWidth = window.innerWidth
 const canvasHeight = window.innerHeight
-const timeInterval = 4000
+const timeInterval = 5000
 
 const StartGameText = styled.div`
   position: absolute;
@@ -18,7 +18,7 @@ const StartGameText = styled.div`
   bottom: 40px;
   text-align: center;
   color: white;
-  font-size: 60px;
+  font-size: 120px;
   font-weight: bold;
   -webkit-text-stroke: 3px black;
   -webkit-text-fill-color: white;
@@ -66,14 +66,16 @@ export default function GameCanvas () {
 
       const body = await response.json()
       const prediction = body.prediction
+
       console.log(prediction)
       console.log(letters)
       console.log(activeLetterIndex)
       console.log(letters[activeLetterIndex])
+
       let activeLetter = letters[activeLetterIndex]
       if (
         activeLetter !== null &&
-        prediction.toLowerCase() === activeLetter.value
+        prediction.toLowerCase() === activeLetter.value.toLowerCase()
       ) {
         setIsCorrect('correct')
         setScore(score + 10)
@@ -83,7 +85,7 @@ export default function GameCanvas () {
       }
       setCurrentPrediction(body.prediction)
     },
-    [letters, activeLetterIndex, score, setIsCorrect, setScore]
+    [gameStarted, letters, activeLetterIndex, score, setIsCorrect, setScore]
   )
 
   const setLetterActive = () => {
@@ -135,7 +137,7 @@ export default function GameCanvas () {
         style={{ height: '100%', width: '100%' }}
         playerOptions={{
           mute: 0,
-          autoplay: 0  
+          autoplay: 0
         }}
       >
         <Score score={score} />
@@ -152,10 +154,12 @@ export default function GameCanvas () {
       {letters &&
         letters.map((value, index) => (
           <Letter
+            key={index}
             x={value.x}
             y={value.y}
             active={value.active}
             value={value.value}
+            time={timeInterval}
           />
         ))}
     </Canvas>
