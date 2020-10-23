@@ -1,0 +1,12 @@
+---
+applications:
+  - name: team4-ui
+    memory: 64M
+    instances: 1
+    buildpack: https://github.com/cloudfoundry/staticfile-buildpack
+    path: ./build/
+    routes:
+      - route: team4-ui.scapp-corp.swisscom.com
+      - route: team4-ui.scapp.swisscom.com
+    env:
+      FORCE_HTTPS: true
