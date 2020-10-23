@@ -6,6 +6,7 @@ import HandAwareWebcam from '../components/HandAwareWebcam'
 import Score from '../components/Score'
 import Letter, { letterSize } from '../components/Letter'
 import Prediction from '../components/Prediction'
+import BackgroundVideo from '../resources/BabyShark.mp4'
 
 const letterCount = 10
 const canvasWidth = window.innerWidth
@@ -39,12 +40,14 @@ const Canvas = styled.div`
 export default function GameCanvas () {
   const [letters, setLetters] = React.useState([])
   const [activeLetterIndex, setActiveLetterIndex] = React.useState(0)
-  const canvasRef = React.useRef(null)
-  const intervalId = React.useRef(0)
   const [gameStarted, setGameStarted] = React.useState(false)
   const [currentPrediction, setCurrentPrediction] = React.useState()
   const [isCorrect, setIsCorrect] = React.useState(null)
   const [score, setScore] = React.useState(0)
+
+  const canvasRef = React.useRef(null)
+  const intervalId = React.useRef(0)
+  const videoRef = React.useRef(null)
 
   const predict = React.useCallback(
     async (img, predictions) => {
@@ -118,10 +121,12 @@ export default function GameCanvas () {
   const toggleGame = e => {
     if (e.keyCode === 32) {
       if (!gameStarted) {
+        videoRef.current.play()
         setGameStarted(true)
         setLetterActive()
         intervalId.current = setInterval(() => setLetterActive(), timeInterval)
       } else {
+        videoRef.current.pause()
         clearInterval(intervalId.current)
         setGameStarted(false)
       }
@@ -130,23 +135,30 @@ export default function GameCanvas () {
 
   return (
     <Canvas ref={canvasRef} onKeyDown={toggleGame} tabIndex='0'>
-      <YoutubeBackground
-        videoId='XqZsoesa55w'
-        style={{ height: '100%', width: '100%' }}
-        playerOptions={{
-          mute: 0,
-          autoplay: 0  
+      <video
+        ref={videoRef}
+        loop
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          left: '50%',
+          top: '50%',
+          objectFit: 'cover',
+          transform: 'translate(-50%, -50%)',
+          zIndex: -1
         }}
       >
-        <Score score={score} />
-        <Prediction prediction={currentPrediction} correct={isCorrect} />
-        <WebcamFrame>
-          <HandAwareWebcam
-            style={{ position: 'absolute' }}
-            onHandRecognized={predict}
-          />
-        </WebcamFrame>
-      </YoutubeBackground>
+        <source src={BackgroundVideo} type='video/mp4' />
+      </video>
+      <Score score={score} />
+      <Prediction prediction={currentPrediction} correct={isCorrect} />
+      <WebcamFrame>
+        <HandAwareWebcam
+          style={{ position: 'absolute' }}
+          onHandRecognized={predict}
+        />
+      </WebcamFrame>
 
       {!gameStarted && <StartGameText>Press space</StartGameText>}
       {letters &&

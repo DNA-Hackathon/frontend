@@ -33,7 +33,11 @@ export default function Prediction ({ prediction, correct }) {
         </span>{' '}
         identifies
       </Title>
-      <Value>
+      <Value
+        style={{
+          color: correct === 'correct' ? 'green' : 'red'
+        }}
+      >
         {prediction} {correct && correct}
       </Value>
     </Container>
